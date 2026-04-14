@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Phone, Github, Linkedin, ExternalLink, ChevronDown } from "lucide-react";
+import { Mail, Phone, Github, Linkedin, ExternalLink, ChevronDown, MapPin } from "lucide-react";
 
 const NAV_ITEMS = ["About", "Skills", "Experience", "Projects", "Achievements", "Contact"];
 
@@ -51,7 +51,10 @@ const Index = () => {
       {/* Nav */}
       <nav className="fixed top-0 w-full bg-background/80 backdrop-blur-sm border-b border-border z-50">
         <div className="max-w-4xl mx-auto px-6 py-3 flex justify-between items-center">
-          <span className="font-mono text-primary text-sm">{"<SM />"}</span>
+          <div className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors cursor-default">
+            <MapPin size={16} className="text-primary animate-pulse" />
+            <span className="font-mono text-sm tracking-tight text-foreground">Chennai, India</span>
+          </div>
           <div className="hidden md:flex gap-6">
             {NAV_ITEMS.map((item) => (
               <button
@@ -135,7 +138,11 @@ const Index = () => {
           <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1" />
           <div className="bg-card border border-border rounded-lg p-5 glow-border">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2">
-              <h4 className="font-semibold">Software Engineering Intern</h4>
+              <h4 className="font-semibold flex items-center gap-2">
+                <a href="https://drive.google.com/file/d/1vTDeGYlptvbwz5XLQMUb6sxXmRcz5nRf/view?usp=sharing" target="_blank" rel="noreferrer" className="hover:underline flex items-center gap-2">
+                  Software Engineering Intern <ExternalLink size={14} />
+                </a>
+              </h4>
               <span className="font-mono text-xs text-muted-foreground">Feb 2025 - Apr 2025</span>
             </div>
             <p className="text-primary text-sm mb-3">Edunet Foundations</p>
