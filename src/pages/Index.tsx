@@ -207,12 +207,104 @@ function SkillBar({ name, level }: { name: string; level: number }) {
     </div>
   );
 }
+// ── Text scramble hook: decodes random chars into final text ──
+function useScramble(target: string, delay = 400) {
+  const [text, setText] = useState("");
+  const CHARS = "!@#$%^*ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  useEffect(() => {
+    let frame = 0;
+    const total = 38;
+    const t = setTimeout(() => {
+      const run = () => {
+        frame++;
+        setText(
+          target.split("").map((ch, i) =>
+            frame / total > i / target.length
+              ? ch
+              : CHARS[Math.floor(Math.random() * CHARS.length)]
+          ).join("")
+        );
+        if (frame < total) requestAnimationFrame(run);
+        else setText(target);
+      };
+      requestAnimationFrame(run);
+    }, delay);
+    return () => clearTimeout(t);
+  }, [target]);
+  return text;
+}
+
+// ── Live IST clock ──
+function useLiveClock() {
+  const [t, setT] = useState("");
+  useEffect(() => {
+    const tick = () => setT(
+      new Date().toLocaleTimeString("en-US", {
+        timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true,
+      })
+    );
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+  return t;
+}
+
+// ── 3D tilt card ──
+function TiltCard({ children, className }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const onMove = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width - 0.5) * 18;
+    const y = ((e.clientY - r.top) / r.height - 0.5) * -18;
+    ref.current.style.transform = `perspective(900px) rotateX(${y}deg) rotateY(${x}deg) scale3d(1.025,1.025,1.025)`;
+    ref.current.style.boxShadow = `${-x * 1.5}px ${y * 1.5}px 40px rgba(192,88,0,0.2)`;
+  };
+  const onLeave = () => {
+    if (!ref.current) return;
+    ref.current.style.transform = "perspective(900px) rotateX(0) rotateY(0) scale3d(1,1,1)";
+    ref.current.style.boxShadow = "";
+  };
+  return (
+    <div ref={ref} className={className} onMouseMove={onMove} onMouseLeave={onLeave}
+      style={{ transition: "transform 0.18s ease, box-shadow 0.18s ease", transformStyle: "preserve-3d" }}>
+      {children}
+    </div>
+  );
+}
+
+// ── Magnetic button ──
+function MagBtn({ href, className, children, onClick }: { href: string; className?: string; children: React.ReactNode; onClick?: React.MouseEventHandler<HTMLAnchorElement> }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const onMove = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    const x = (e.clientX - r.left - r.width / 2) * 0.33;
+    const y = (e.clientY - r.top - r.height / 2) * 0.33;
+    ref.current.style.transform = `translate(${x}px, ${y}px)`;
+  };
+  const onLeave = () => { if (ref.current) ref.current.style.transform = "translate(0,0)"; };
+  return (
+    <a ref={ref} href={href} className={className} onClick={onClick}
+      onMouseMove={onMove} onMouseLeave={onLeave}
+      style={{ transition: "transform 0.35s cubic-bezier(0.23,1,0.32,1)", display: "inline-flex", alignItems: "center", gap: 8 }}>
+      {children}
+    </a>
+  );
+}
+
 
 const Index = () => {
   const typedRole = useTypingEffect(ROLES);
+  const scrambledName = useScramble("Mohith", 600);
+  const clock = useLiveClock();
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("About");
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  const px = typeof window !== "undefined" ? (mousePos.x - window.innerWidth / 2) / 60 : 0;
+  const py = typeof window !== "undefined" ? (mousePos.y - window.innerHeight / 2) / 60 : 0;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -268,8 +360,9 @@ const Index = () => {
       <nav className={`portfolio-nav ${scrolled ? "nav-scrolled" : ""}`}>
         <div className="nav-inner">
           <div className="nav-logo">
-            <MapPin size={14} className="text-primary animate-pulse" />
+            <MapPin size={14} className="nav-pin" />
             <span>Chennai, India</span>
+            <span className="nav-clock">· {clock} IST</span>
           </div>
           <div className="nav-links">
             {NAV_ITEMS.map((item) => (
@@ -295,22 +388,22 @@ const Index = () => {
             <Sparkles size={12} />
             <span>Available for Opportunities</span>
           </div>
-          <h1 className="hero-name">
-            <span className="hero-name-gradient">Mohith</span>
+          <h1 className="hero-name" style={{ transform: `translate(${px * -0.6}px, ${py * -0.6}px)` }}>
+            <span className="hero-name-gradient">{scrambledName || "Mohith"}</span>
           </h1>
-          <div className="hero-role">
+          <div className="hero-role" style={{ transform: `translate(${px * 0.3}px, ${py * 0.3}px)` }}>
             <span className="hero-role-prefix">I build&nbsp;</span>
             <span className="hero-role-typed">{typedRole}<span className="cursor-blink">|</span></span>
           </div>
-          <p className="hero-desc">
+          <p className="hero-desc" style={{ transform: `translate(${px * 0.15}px, ${py * 0.15}px)` }}>
             B.Tech AI & Data Science @ Shiv Nadar University. I craft ML pipelines,
             agentic AI apps, and full-stack systems. Turning data into experience.
           </p>
 
           <div className="hero-actions">
-            <a href="#projects" onClick={(e) => { e.preventDefault(); scrollTo("Projects"); }} className="btn-primary">
+            <MagBtn href="#projects" onClick={(e) => { e.preventDefault(); scrollTo("Projects"); }} className="btn-primary">
               View My Work <ArrowUpRight size={16} />
-            </a>
+            </MagBtn>
             <div className="hero-socials">
               <a href="mailto:mohithkudumu@gmail.com" aria-label="Email" className="social-btn"><Mail size={18} /></a>
               <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="social-btn"><Linkedin size={18} /></a>
@@ -431,8 +524,8 @@ const Index = () => {
         <div className="section-label">What I've Built</div>
         <h2 className="section-title">Projects</h2>
         <div className="projects-bento">
-          {PROJECTS.map((project, i) => (
-            <div key={project.title} className={`project-card ${project.featured ? "project-featured" : ""}`}>
+          {PROJECTS.map((project) => (
+            <TiltCard key={project.title} className={`project-card ${project.featured ? "project-featured" : ""}`}>
               <div className="project-card-inner">
                 <div className="project-top">
                   <span className="project-emoji">{project.emoji}</span>
@@ -453,7 +546,7 @@ const Index = () => {
                 )}
               </div>
               <div className={`project-glow bg-gradient-to-br ${project.tagColor}`} />
-            </div>
+            </TiltCard>
           ))}
         </div>
       </section>
