@@ -37,9 +37,112 @@ body {
   line-height: 1.7;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  cursor: none;
 }
 
 strong { color: var(--primary); }
+
+/* ─────────────── Custom Cursor ─────────────── */
+a, button { cursor: none !important; }
+.c-dot {
+  position: fixed;
+  top: -4px;
+  left: -4px;
+  width: 8px;
+  height: 8px;
+  background: #FDFBD4;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  will-change: transform;
+  transition: width 0.2s, height 0.2s, top 0.2s, left 0.2s, background 0.2s;
+}
+.c-dot.c-dot-h {
+  width: 12px;
+  height: 12px;
+  top: -6px;
+  left: -6px;
+  background: #C05800;
+}
+.c-ring {
+  position: fixed;
+  top: -20px;
+  left: -20px;
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid rgba(192,88,0,0.55);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  will-change: transform;
+  transition: width 0.3s, height 0.3s, top 0.3s, left 0.3s, border-color 0.3s;
+}
+.c-ring.c-ring-h {
+  width: 58px;
+  height: 58px;
+  top: -29px;
+  left: -29px;
+  border-color: rgba(253,251,212,0.45);
+}
+
+/* ─────────────── Scroll Progress Bar ─────────────── */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2.5px;
+  background: linear-gradient(90deg, #713600, #C05800, #FDFBD4);
+  z-index: 99999;
+  transition: width 0.08s linear;
+  box-shadow: 0 0 10px rgba(192,88,0,0.6);
+  pointer-events: none;
+}
+
+/* ─────────────── Section Reveal ─────────────── */
+.section-wrapper.will-reveal {
+  opacity: 0;
+  transform: translateY(48px);
+  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.section-wrapper.will-reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─────────────── Marquee Ticker ─────────────── */
+.marquee-wrapper {
+  overflow: hidden;
+  border-top: 1px solid rgba(192,88,0,0.14);
+  border-bottom: 1px solid rgba(192,88,0,0.14);
+  padding: 14px 0;
+  background: rgba(56,36,13,0.4);
+  backdrop-filter: blur(12px);
+  position: relative;
+  z-index: 1;
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 30s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+.marquee-item {
+  padding: 0 18px;
+  font-family: 'Fira Code', monospace;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  transition: color 0.2s;
+}
+.marquee-item:hover { color: var(--text); }
+.marquee-sep { color: #C05800; font-size: 9px; }
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
 
 /* ─────────────── Cursor Spotlight ─────────────── */
 .cursor-spotlight {

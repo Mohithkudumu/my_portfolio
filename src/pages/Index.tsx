@@ -294,17 +294,81 @@ function MagBtn({ href, className, children, onClick }: { href: string; classNam
   );
 }
 
+const MARQUEE_ITEMS = [
+  "Python", "React", "PyTorch", "FastAPI", "MongoDB", "LSTM", "Gemini API",
+  "TypeScript", "Scikit-Learn", "Digital Twins", "Agentic AI", "Gen AI", "Node.js", "Stable Diffusion",
+];
+
+// ── Custom cursor with lagging ring ──
+function CustomCursor() {
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+  const mouse = useRef({ x: -200, y: -200 });
+  const ring = useRef({ x: -200, y: -200 });
+  const [hovered, setHovered] = useState(false);
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      mouse.current = { x: e.clientX, y: e.clientY };
+      if (dotRef.current)
+        dotRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+    };
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+    let raf: number;
+    const tick = () => {
+      ring.current.x = lerp(ring.current.x, mouse.current.x, 0.1);
+      ring.current.y = lerp(ring.current.y, mouse.current.y, 0.1);
+      if (ringRef.current)
+        ringRef.current.style.transform = `translate(${ring.current.x}px, ${ring.current.y}px)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    window.addEventListener("mousemove", onMove);
+    const over = (e: MouseEvent) =>
+      setHovered(!!(e.target as Element).closest("a, button"));
+    window.addEventListener("mouseover", over);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseover", over);
+    };
+  }, []);
+
+  return (
+    <>
+      <div ref={dotRef} className={`c-dot${hovered ? " c-dot-h" : ""}`} />
+      <div ref={ringRef} className={`c-ring${hovered ? " c-ring-h" : ""}`} />
+    </>
+  );
+}
+
+// ── Scroll progress ──
+function useScrollProgress() {
+  const [p, setP] = useState(0);
+  useEffect(() => {
+    const fn = () => {
+      const total = document.body.scrollHeight - window.innerHeight;
+      setP(total > 0 ? (window.scrollY / total) * 100 : 0);
+    };
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
+  return p;
+}
+
 
 const Index = () => {
   const typedRole = useTypingEffect(ROLES);
   const scrambledName = useScramble("Mohith", 600);
   const clock = useLiveClock();
+  const scrollProgress = useScrollProgress();
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("About");
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   const px = typeof window !== "undefined" ? (mousePos.x - window.innerWidth / 2) / 60 : 0;
   const py = typeof window !== "undefined" ? (mousePos.y - window.innerHeight / 2) / 60 : 0;
+
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -336,12 +400,28 @@ const Index = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Section reveal on scroll
+  useEffect(() => {
+    const els = document.querySelectorAll(".section-wrapper");
+    els.forEach(el => el.classList.add("will-reveal"));
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("in-view"); }),
+      { threshold: 0.08 }
+    );
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
   const scrollTo = (id: string) => {
     document.getElementById(id.toLowerCase())?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <div className="portfolio-root">
+      {/* Custom cursor */}
+      <CustomCursor />
+      {/* Scroll progress bar */}
+      <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }} />
       {/* Cursor spotlight */}
       <div
         className="cursor-spotlight"
@@ -425,6 +505,17 @@ const Index = () => {
           <div className="scroll-dot" />
         </div>
       </section>
+
+      {/* ─── Marquee Ticker ─── */}
+      <div className="marquee-wrapper" aria-hidden>
+        <div className="marquee-track">
+          {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+            <span key={i} className="marquee-item">
+              {item} <span className="marquee-sep">✶</span>
+            </span>
+          ))}
+        </div>
+      </div>
 
       {/* ─── About ─── */}
       <section id="about" className="section-wrapper">
