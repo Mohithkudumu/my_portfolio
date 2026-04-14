@@ -71,6 +71,7 @@ const PROJECTS = [
     featured: false,
     emoji: "🧥",
     stat: "85% accuracy",
+    link: "https://drive.google.com/file/d/1loe9fl9ZgpM3H1ZZXg2FA06dEIvv6sDc/view",
   },
 ];
 
@@ -486,7 +487,7 @@ const Index = () => {
             </MagBtn>
             <div className="hero-socials">
               <a href="mailto:mohithkudumu@gmail.com" aria-label="Email" className="social-btn"><Mail size={18} /></a>
-              <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="social-btn"><Linkedin size={18} /></a>
+              <a href="https://www.linkedin.com/in/mohith-kudumu07/" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="social-btn"><Linkedin size={18} /></a>
               <a href="https://github.com/Mohithkudumu" target="_blank" rel="noreferrer" aria-label="GitHub" className="social-btn"><Github size={18} /></a>
             </div>
           </div>
@@ -678,7 +679,7 @@ const Index = () => {
           <a href="mailto:mohithkudumu@gmail.com" className="contact-btn-primary">
             <Mail size={18} /> Say Hello
           </a>
-          <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="contact-btn-secondary">
+          <a href="https://www.linkedin.com/in/mohith-kudumu07/" target="_blank" rel="noreferrer" className="contact-btn-secondary">
             <Linkedin size={18} /> LinkedIn
           </a>
         </div>
