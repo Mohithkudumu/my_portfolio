@@ -73,6 +73,17 @@ const PROJECTS = [
     stat: "85% accuracy",
     link: "https://drive.google.com/file/d/1loe9fl9ZgpM3H1ZZXg2FA06dEIvv6sDc/view",
   },
+  {
+    title: "Agency Portfolio",
+    tag: "Web Dev",
+    tagColor: "from-amber-500 to-yellow-500",
+    desc: "Full-fledged agency website for an organization deployed on Vercel, showcasing Projects, Clients, and Services. Drove a 50+ new client increase per week through improved online presence.",
+    tech: ["React", "TypeScript", "TailwindCSS", "Vercel"],
+    featured: false,
+    emoji: "🏢",
+    stat: "+50 clients/week",
+    link: "https://set-environmental.vercel.app/",
+  },
 ];
 
 const ACHIEVEMENTS = [
