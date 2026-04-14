@@ -1,191 +1,389 @@
-import { useState } from "react";
-import { Mail, Phone, Github, Linkedin, ExternalLink, ChevronDown, MapPin } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Mail, Github, Linkedin, ExternalLink, MapPin, ArrowUpRight, Sparkles, Code2, Brain, Layers } from "lucide-react";
 
 const NAV_ITEMS = ["About", "Skills", "Experience", "Projects", "Achievements", "Contact"];
 
-const SKILLS = [
-  "Python", "TypeScript", "Java", "C/C++", "React", "Flask", "SQL",
-  "MongoDB", "PostgreSQL", "PyTorch", "Numpy", "Pandas", "Scikit-Learn",
-  "Git", "Vercel", "Data Structures", "OOP", "LSTM", "Cybersecurity",
+const SKILL_CATEGORIES = [
+  {
+    icon: <Code2 size={18} />,
+    label: "Languages & Frameworks",
+    skills: [
+      { name: "Python", level: 92 },
+      { name: "TypeScript", level: 82 },
+      { name: "React", level: 85 },
+      { name: "Flask", level: 78 },
+      { name: "Java / C++", level: 72 },
+    ],
+  },
+  {
+    icon: <Brain size={18} />,
+    label: "AI / ML",
+    skills: [
+      { name: "PyTorch", level: 85 },
+      { name: "Scikit-Learn", level: 88 },
+      { name: "LSTM / RNN", level: 80 },
+      { name: "Numpy / Pandas", level: 90 },
+      { name: "Stable Diffusion", level: 74 },
+    ],
+  },
+  {
+    icon: <Layers size={18} />,
+    label: "Data & Cloud",
+    skills: [
+      { name: "MongoDB", level: 80 },
+      { name: "PostgreSQL", level: 75 },
+      { name: "SQL", level: 82 },
+      { name: "Git / Vercel", level: 88 },
+      { name: "Data Structures", level: 85 },
+    ],
+  },
 ];
 
 const PROJECTS = [
   {
     title: "Campus Carbon Pulse",
     tag: "AI & IoT",
-    desc: "Digital Twin system using FastAPI, React and LSTM to monitor campus carbon flow in real-time. Integrated Gemini API for automated predictive reporting.",
-    tech: ["FastAPI", "React", "LSTM", "Gemini API"],
+    tagColor: "from-emerald-500 to-teal-500",
+    desc: "Real-time Digital Twin system monitoring campus carbon flow using FastAPI, React, and LSTM networks. Integrated Gemini API for automated predictive sustainability reporting.",
+    tech: ["FastAPI", "React", "LSTM", "Gemini API", "IoT"],
     link: "https://carbon-twin-snuc.vercel.app/",
+    featured: true,
+    emoji: "🌿",
+    stat: "Real-time data",
   },
   {
     title: "ERP System",
     tag: "Full-Stack",
-    desc: "0-to-1 ERP solution using ReactJS and MongoDB. Reduced operational friction by 50% through automated CRUD operations.",
-    tech: ["React", "MongoDB", "Node.js"],
+    tagColor: "from-violet-500 to-purple-500",
+    desc: "0-to-1 ERP solution using ReactJS and MongoDB that reduced operational friction by 50% through intelligent automated CRUD operations and workflow automation.",
+    tech: ["React", "MongoDB", "Node.js", "REST API"],
     link: "https://erp-system-seven-sepia.vercel.app/",
+    featured: true,
+    emoji: "⚡",
+    stat: "50% less friction",
   },
   {
     title: "Virtual Cloth Try-On",
     tag: "Gen AI",
-    desc: "Web app letting users virtually try on clothing using Stable Diffusion and Generative AI. Achieved 85% accuracy.",
-    tech: ["Stable Diffusion", "Python", "Gen AI"],
+    tagColor: "from-pink-500 to-rose-500",
+    desc: "Web app letting users virtually try on clothing using Stable Diffusion and Generative AI, achieving 85% accuracy on a complex computer vision task.",
+    tech: ["Stable Diffusion", "Python", "Gen AI", "CV"],
+    featured: false,
+    emoji: "🧥",
+    stat: "85% accuracy",
   },
 ];
 
 const ACHIEVEMENTS = [
-  { title: "3rd Place - GDG SNUC", desc: "Google Developer Group hackathon", link: "https://drive.google.com/file/d/1Ls4n3RISY7GytWntXMgz-yiQZsokiawE/view?usp=sharing" },
-  { title: "Finalist - Hack4Purpose", desc: "Bridging industry & startup solutions" },
-  { title: "Top 10 - Smart India Hackathon", desc: "AI-driven disaster management" },
+  {
+    rank: "3rd",
+    title: "GDG SNUC Hackathon",
+    org: "Google Developer Group",
+    link: "https://drive.google.com/file/d/1Ls4n3RISY7GytWntXMgz-yiQZsokiawE/view?usp=sharing",
+    color: "from-amber-400 to-orange-500",
+    bg: "from-amber-500/10 to-orange-500/5",
+  },
+  {
+    rank: "Top",
+    title: "Hack4Purpose Finalist",
+    org: "Bridging industry & startup solutions",
+    color: "from-violet-400 to-purple-500",
+    bg: "from-violet-500/10 to-purple-500/5",
+  },
+  {
+    rank: "T10",
+    title: "Smart India Hackathon",
+    org: "AI-driven disaster management",
+    color: "from-cyan-400 to-blue-500",
+    bg: "from-cyan-500/10 to-blue-500/5",
+  },
 ];
 
+const ROLES = ["AI Systems.", "ML Pipelines.", "Full-Stack Apps.", "Agentic AI.", "Digital Twins."];
+
+const AvatarIcon = () => (
+  <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" style={{width: 56, height: 56}}>
+    <rect x="8" y="20" width="64" height="44" rx="6" stroke="#C05800" strokeWidth="3" fill="none"/>
+    <polyline points="18,46 26,36 34,42 44,30 54,40 62,32" stroke="#FDFBD4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    <circle cx="26" cy="36" r="2.5" fill="#C05800"/>
+    <circle cx="34" cy="42" r="2.5" fill="#C05800"/>
+    <circle cx="44" cy="30" r="2.5" fill="#FDFBD4"/>
+    <circle cx="54" cy="40" r="2.5" fill="#C05800"/>
+    <circle cx="62" cy="32" r="2.5" fill="#C05800"/>
+    <rect x="32" y="8" width="16" height="14" rx="3" fill="#38240D" stroke="#C05800" strokeWidth="2"/>
+    <circle cx="40" cy="15" r="3" fill="#C05800"/>
+  </svg>
+);
+
+// Animated typing hook
+function useTypingEffect(words: string[], speed = 90, pause = 1800) {
+  const [display, setDisplay] = useState("");
+  const [wordIdx, setWordIdx] = useState(0);
+  const [charIdx, setCharIdx] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const current = words[wordIdx];
+    const timeout = setTimeout(() => {
+      if (!deleting) {
+        setDisplay(current.slice(0, charIdx + 1));
+        if (charIdx + 1 === current.length) {
+          setTimeout(() => setDeleting(true), pause);
+        } else {
+          setCharIdx((c) => c + 1);
+        }
+      } else {
+        setDisplay(current.slice(0, charIdx - 1));
+        if (charIdx === 0) {
+          setDeleting(false);
+          setWordIdx((w) => (w + 1) % words.length);
+        } else {
+          setCharIdx((c) => c - 1);
+        }
+      }
+    }, deleting ? speed / 2 : speed);
+    return () => clearTimeout(timeout);
+  }, [charIdx, deleting, wordIdx, words, speed, pause]);
+
+  return display;
+}
+
+// Animated counter
+function useCounter(target: number, duration = 1200) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        let start = 0;
+        const step = target / (duration / 16);
+        const timer = setInterval(() => {
+          start += step;
+          if (start >= target) { setCount(target); clearInterval(timer); }
+          else setCount(Math.floor(start));
+        }, 16);
+        observer.disconnect();
+      }
+    }, { threshold: 0.5 });
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [target, duration]);
+  return { count, ref };
+}
+
+function StatCard({ value, label, suffix = "" }: { value: number; label: string; suffix?: string }) {
+  const { count, ref } = useCounter(value);
+  return (
+    <div className="stat-card">
+      <span ref={ref} className="stat-number">{count}{suffix}</span>
+      <span className="stat-label">{label}</span>
+    </div>
+  );
+}
+
+function SkillBar({ name, level }: { name: string; level: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [animated, setAnimated] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setAnimated(true); observer.disconnect(); }
+    }, { threshold: 0.3 });
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className="skill-bar-item">
+      <div className="skill-bar-header">
+        <span className="skill-name">{name}</span>
+        <span className="skill-percent">{level}%</span>
+      </div>
+      <div className="skill-bar-track">
+        <div
+          className="skill-bar-fill"
+          style={{ width: animated ? `${level}%` : "0%" }}
+        />
+      </div>
+    </div>
+  );
+}
+
 const Index = () => {
-  const [activeSection, setActiveSection] = useState("");
+  const typedRole = useTypingEffect(ROLES);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("About");
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Cursor spotlight effect
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => setMousePos({ x: e.clientX, y: e.clientY });
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
+
+  // Highlight active nav section
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActiveSection(e.target.id);
+        });
+      },
+      { threshold: 0.4 }
+    );
+    NAV_ITEMS.forEach((item) => {
+      const el = document.getElementById(item.toLowerCase());
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
 
   const scrollTo = (id: string) => {
     document.getElementById(id.toLowerCase())?.scrollIntoView({ behavior: "smooth" });
-    setActiveSection(id);
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Nav */}
-      <nav className="fixed top-0 w-full bg-background/80 backdrop-blur-sm border-b border-border z-50">
-        <div className="max-w-4xl mx-auto px-6 py-3 flex justify-between items-center">
-          <div className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors cursor-default">
-            <MapPin size={16} className="text-primary animate-pulse" />
-            <span className="font-mono text-sm tracking-tight text-foreground">Chennai, India</span>
+    <div className="portfolio-root">
+      {/* Cursor spotlight */}
+      <div
+        className="cursor-spotlight"
+        style={{ left: mousePos.x, top: mousePos.y }}
+      />
+
+      {/* Animated grid background */}
+      <div className="grid-bg" aria-hidden />
+
+      {/* Floating orbs */}
+      <div className="orb orb-1" aria-hidden />
+      <div className="orb orb-2" aria-hidden />
+      <div className="orb orb-3" aria-hidden />
+
+      {/* ─── Navbar ─── */}
+      <nav className={`portfolio-nav ${scrolled ? "nav-scrolled" : ""}`}>
+        <div className="nav-inner">
+          <div className="nav-logo">
+            <MapPin size={14} className="text-primary animate-pulse" />
+            <span>Chennai, India</span>
           </div>
-          <div className="hidden md:flex gap-6">
+          <div className="nav-links">
             {NAV_ITEMS.map((item) => (
               <button
                 key={item}
                 onClick={() => scrollTo(item)}
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                className={`nav-btn ${activeSection === item.toLowerCase() ? "nav-btn-active" : ""}`}
               >
                 {item}
               </button>
             ))}
           </div>
+          <a href="mailto:mohithkudumu@gmail.com" className="nav-cta">
+            Let's Talk <ArrowUpRight size={14} />
+          </a>
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
-        <p className="font-mono text-primary text-sm mb-4">hi, my name is</p>
-        <h1 className="text-4xl md:text-6xl font-bold mb-2">
-          <span className="text-gradient">K. Sai Mohith</span>
-        </h1>
-        <p className="text-xl md:text-2xl text-muted-foreground mt-2 mb-6">
-          AI & Data Science Engineer
-        </p>
-        <p className="max-w-lg text-muted-foreground text-sm leading-relaxed mb-8">
-          B.Tech student at Shiv Nadar University building ML pipelines, agentic AI apps,
-          and full-stack systems. I like making computers do cool stuff.
-        </p>
-        <div className="flex gap-4 mb-12">
-          <a href="mailto:mohithkudumu@gmail.com" className="p-2 border border-border rounded-md hover:border-primary hover:text-primary transition-colors">
-            <Mail size={18} />
-          </a>
-          <a href="tel:+918374251014" className="p-2 border border-border rounded-md hover:border-primary hover:text-primary transition-colors">
-            <Phone size={18} />
-          </a>
-          <a href="#" className="p-2 border border-border rounded-md hover:border-primary hover:text-primary transition-colors">
-            <Linkedin size={18} />
-          </a>
-          <a href="#" className="p-2 border border-border rounded-md hover:border-primary hover:text-primary transition-colors">
-            <Github size={18} />
-          </a>
-        </div>
-        <ChevronDown size={20} className="text-muted-foreground animate-bounce" />
-      </section>
-
-      {/* About */}
-      <section id="about" className="max-w-3xl mx-auto px-6 py-20">
-        <h2 className="font-mono text-primary text-sm mb-2">{"// about me"}</h2>
-        <h3 className="text-2xl font-bold mb-6">About</h3>
-        <div className="bg-card border border-border rounded-lg p-6 glow-border">
-          <p className="text-muted-foreground leading-relaxed text-sm">
-            I'm an aspiring AI & Data Science Engineer with expertise in developing and managing
-            agentic AI applications. I have experience building end-to-end ML pipelines and
-            real-time telemetry systems. Currently pursuing B.Tech in AI and Data Science at
-            Shiv Nadar University (2023-2027). When I'm not coding, I'm probably debugging
-            something I broke at 2 AM.
+      {/* ─── Hero ─── */}
+      <section className="hero-section">
+        <div className="hero-inner">
+          <div className="hero-badge">
+            <Sparkles size={12} />
+            <span>Available for Opportunities</span>
+          </div>
+          <h1 className="hero-name">
+            <span className="hero-name-gradient">Mohith</span>
+          </h1>
+          <div className="hero-role">
+            <span className="hero-role-prefix">I build&nbsp;</span>
+            <span className="hero-role-typed">{typedRole}<span className="cursor-blink">|</span></span>
+          </div>
+          <p className="hero-desc">
+            B.Tech AI & Data Science @ Shiv Nadar University. I craft ML pipelines,
+            agentic AI apps, and full-stack systems. Turning data into experience.
           </p>
-        </div>
-      </section>
 
-      {/* Skills */}
-      <section id="skills" className="max-w-3xl mx-auto px-6 py-20">
-        <h2 className="font-mono text-primary text-sm mb-2">{"// skills"}</h2>
-        <h3 className="text-2xl font-bold mb-6">Tech Stack</h3>
-        <div className="flex flex-wrap gap-2">
-          {SKILLS.map((skill) => (
-            <span
-              key={skill}
-              className="px-3 py-1.5 bg-secondary text-secondary-foreground text-xs font-mono rounded-md border border-border hover:border-primary hover:text-primary transition-colors cursor-default"
-            >
-              {skill}
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* Experience */}
-      <section id="experience" className="max-w-3xl mx-auto px-6 py-20">
-        <h2 className="font-mono text-primary text-sm mb-2">{"// experience"}</h2>
-        <h3 className="text-2xl font-bold mb-6">Work Experience</h3>
-        <div className="border-l-2 border-border pl-6 relative">
-          <div className="absolute w-3 h-3 bg-primary rounded-full -left-[7px] top-1" />
-          <div className="bg-card border border-border rounded-lg p-5 glow-border">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2">
-              <h4 className="font-semibold flex items-center gap-2">
-                <a href="https://drive.google.com/file/d/1vTDeGYlptvbwz5XLQMUb6sxXmRcz5nRf/view?usp=sharing" target="_blank" rel="noreferrer" className="hover:underline flex items-center gap-2">
-                  Software Engineering Intern <ExternalLink size={14} />
-                </a>
-              </h4>
-              <span className="font-mono text-xs text-muted-foreground">Feb 2025 - Apr 2025</span>
+          <div className="hero-actions">
+            <a href="#projects" onClick={(e) => { e.preventDefault(); scrollTo("Projects"); }} className="btn-primary">
+              View My Work <ArrowUpRight size={16} />
+            </a>
+            <div className="hero-socials">
+              <a href="mailto:mohithkudumu@gmail.com" aria-label="Email" className="social-btn"><Mail size={18} /></a>
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="social-btn"><Linkedin size={18} /></a>
+              <a href="https://github.com/Mohithkudumu" target="_blank" rel="noreferrer" aria-label="GitHub" className="social-btn"><Github size={18} /></a>
             </div>
-            <p className="text-primary text-sm mb-3">Edunet Foundations</p>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>• Engineered ML pipelines for medical datasets with feature engineering & normalization</li>
-              <li>• Optimized modules for faster inference in healthcare environments</li>
-              <li>• Validated models using precision-recall, F1-score, ROC-AUC</li>
-              <li>• Built maintainable Python codebases using OOP principles</li>
-            </ul>
+          </div>
+
+          {/* Stats */}
+          <div className="hero-stats">
+            <StatCard value={3} label="Projects Shipped" suffix="+" />
+            <StatCard value={85} label="ML Accuracy" suffix="%" />
+            <StatCard value={50} label="Ops Reduced" suffix="%" />
+            <StatCard value={2} label="Years Coding" suffix="+" />
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="scroll-indicator">
+          <div className="scroll-dot" />
+        </div>
+      </section>
+
+      {/* ─── About ─── */}
+      <section id="about" className="section-wrapper">
+        <div className="section-label">Who I Am</div>
+        <h2 className="section-title">About Me</h2>
+        <div className="about-grid">
+          <div className="about-card">
+            <div className="about-card-inner">
+              <div className="about-avatar"><AvatarIcon /></div>
+              <h3 className="about-name">Sai Mohith</h3>
+              <p className="about-degree">B.Tech, AI & Data Science</p>
+              <p className="about-uni">Shiv Nadar University · 2023 – 2027</p>
+              <div className="about-tags">
+                <span className="about-tag">🤖 Agentic AI</span>
+                <span className="about-tag">📊 ML Pipelines</span>
+                <span className="about-tag">⚡ Full-Stack</span>
+              </div>
+            </div>
+          </div>
+          <div className="about-text-block">
+            <p>
+              I'm an aspiring <strong className="text-primary">AI & Data Science Engineer</strong> with a passion
+              for building systems that sit at the intersection of intelligence and user experience. My work spans
+              real-time telemetry systems, large-scale ML pipelines, and production-grade full-stack apps.
+            </p>
+            <p>
+              At Shiv Nadar University, I'm constantly pushing what I know, whether it's fine-tuning language models,
+              architecting agentic AI applications, or shipping a polished product end-to-end to Vercel.
+            </p>
+            <p>When I'm not coding, I'm probably debugging something I broke at 2 AM — and calling it a feature.</p>
+            <div className="interest-chips">
+              <span>Agentic AI</span><span>Digital Twins</span><span>LSTM</span>
+              <span>Gen AI</span><span>NLP</span><span>MLOps</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Projects */}
-      <section id="projects" className="max-w-3xl mx-auto px-6 py-20">
-        <h2 className="font-mono text-primary text-sm mb-2">{"// projects"}</h2>
-        <h3 className="text-2xl font-bold mb-6">Things I've Built</h3>
-        <div className="grid gap-4">
-          {PROJECTS.map((project) => (
-            <div
-              key={project.title}
-              className="bg-card border border-border rounded-lg p-5 hover:border-primary/50 transition-colors group glow-border"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold group-hover:text-primary transition-colors flex items-center gap-2">
-                  {project.link ? (
-                    <a href={project.link} target="_blank" rel="noreferrer" className="hover:underline flex items-center gap-2">
-                      {project.title} <ExternalLink size={14} />
-                    </a>
-                  ) : (
-                    project.title
-                  )}
-                </h4>
-                <span className="text-xs font-mono text-accent bg-accent/10 px-2 py-0.5 rounded">
-                  {project.tag}
-                </span>
+      {/* ─── Skills ─── */}
+      <section id="skills" className="section-wrapper">
+        <div className="section-label">Expertise</div>
+        <h2 className="section-title">Tech Stack</h2>
+        <div className="skills-grid">
+          {SKILL_CATEGORIES.map((cat) => (
+            <div key={cat.label} className="skill-category-card">
+              <div className="skill-cat-header">
+                <span className="skill-cat-icon">{cat.icon}</span>
+                <h3 className="skill-cat-label">{cat.label}</h3>
               </div>
-              <p className="text-sm text-muted-foreground mb-3">{project.desc}</p>
-              <div className="flex flex-wrap gap-2">
-                {project.tech.map((t) => (
-                  <span key={t} className="text-xs font-mono text-primary/70 bg-primary/5 px-2 py-0.5 rounded">
-                    {t}
-                  </span>
+              <div className="skill-bars">
+                {cat.skills.map((skill) => (
+                  <SkillBar key={skill.name} name={skill.name} level={skill.level} />
                 ))}
               </div>
             </div>
@@ -193,51 +391,120 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Achievements */}
-      <section id="achievements" className="max-w-3xl mx-auto px-6 py-20">
-        <h2 className="font-mono text-primary text-sm mb-2">{"// achievements"}</h2>
-        <h3 className="text-2xl font-bold mb-6">Achievements</h3>
-        <div className="grid gap-3">
-          {ACHIEVEMENTS.map((a) => (
-            <div key={a.title} className="flex items-center gap-3 bg-card border border-border rounded-lg p-4">
-              <span className="text-primary text-lg">🏆</span>
+      {/* ─── Experience ─── */}
+      <section id="experience" className="section-wrapper">
+        <div className="section-label">Work History</div>
+        <h2 className="section-title">Experience</h2>
+        <div className="exp-timeline">
+          <div className="exp-line" />
+          <div className="exp-dot" />
+          <div className="exp-card">
+            <div className="exp-meta">
               <div>
-                <div className="font-semibold text-sm">
-                  {a.link ? (
-                    <a href={a.link} target="_blank" rel="noreferrer" className="hover:underline flex items-center gap-2 text-primary">
-                      {a.title} <ExternalLink size={14} />
-                    </a>
-                  ) : (
-                    a.title
-                  )}
+                <h3 className="exp-role">
+                  <a href="https://drive.google.com/file/d/1vTDeGYlptvbwz5XLQMUb6sxXmRcz5nRf/view?usp=sharing"
+                    target="_blank" rel="noreferrer" className="exp-link">
+                    Software Engineering Intern <ExternalLink size={14} />
+                  </a>
+                </h3>
+                <p className="exp-company">Edunet Foundations</p>
+              </div>
+              <span className="exp-date">Feb 2025 – Apr 2025</span>
+            </div>
+            <ul className="exp-bullets">
+              <li>Engineered ML pipelines for medical datasets with feature engineering & normalization</li>
+              <li>Optimized modules for faster inference in healthcare environments</li>
+              <li>Validated models using precision-recall, F1-score, ROC-AUC</li>
+              <li>Built maintainable Python codebases using solid OOP principles</li>
+            </ul>
+            <div className="exp-chips">
+              {["Python", "Scikit-Learn", "Pandas", "ML Pipelines", "Healthcare AI"].map((t) => (
+                <span key={t} className="exp-chip">{t}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Projects ─── */}
+      <section id="projects" className="section-wrapper">
+        <div className="section-label">What I've Built</div>
+        <h2 className="section-title">Projects</h2>
+        <div className="projects-bento">
+          {PROJECTS.map((project, i) => (
+            <div key={project.title} className={`project-card ${project.featured ? "project-featured" : ""}`}>
+              <div className="project-card-inner">
+                <div className="project-top">
+                  <span className="project-emoji">{project.emoji}</span>
+                  <span className={`project-tag bg-gradient-to-r ${project.tagColor}`}>{project.tag}</span>
                 </div>
-                <p className="text-xs text-muted-foreground">{a.desc}</p>
+                <h3 className="project-title">{project.title}</h3>
+                <p className="project-desc">{project.desc}</p>
+                <div className="project-stat">{project.stat}</div>
+                <div className="project-tech">
+                  {project.tech.map((t) => (
+                    <span key={t} className="project-chip">{t}</span>
+                  ))}
+                </div>
+                {project.link && (
+                  <a href={project.link} target="_blank" rel="noreferrer" className="project-link-btn">
+                    Live Demo <ArrowUpRight size={14} />
+                  </a>
+                )}
+              </div>
+              <div className={`project-glow bg-gradient-to-br ${project.tagColor}`} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── Achievements ─── */}
+      <section id="achievements" className="section-wrapper">
+        <div className="section-label">Recognition</div>
+        <h2 className="section-title">Achievements</h2>
+        <div className="achievements-grid">
+          {ACHIEVEMENTS.map((a) => (
+            <div key={a.title} className={`achievement-card bg-gradient-to-br ${a.bg}`}>
+              <div className={`achievement-rank bg-gradient-to-br ${a.color}`}>{a.rank}</div>
+              <div className="achievement-info">
+                {a.link ? (
+                  <a href={a.link} target="_blank" rel="noreferrer" className="achievement-title-link">
+                    {a.title} <ExternalLink size={12} />
+                  </a>
+                ) : (
+                  <p className="achievement-title">{a.title}</p>
+                )}
+                <p className="achievement-org">{a.org}</p>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Contact */}
-      <section id="contact" className="max-w-3xl mx-auto px-6 py-20 text-center">
-        <h2 className="font-mono text-primary text-sm mb-2">{"// contact"}</h2>
-        <h3 className="text-2xl font-bold mb-4">Get In Touch</h3>
-        <p className="text-muted-foreground text-sm mb-6 max-w-md mx-auto">
-          I'm currently looking for internship opportunities. Feel free to reach out!
+      {/* ─── Contact ─── */}
+      <section id="contact" className="section-wrapper contact-section">
+        <div className="contact-glow" />
+        <div className="section-label">Reach Out</div>
+        <h2 className="contact-title">Let's Build Something<br /><span className="text-gradient-contact">Together</span></h2>
+        <p className="contact-desc">
+          I'm actively looking for internship & full-time opportunities. Whether it's a project,
+          a role, or just a great conversation — my inbox is open.
         </p>
-        <a
-          href="mailto:mohithkudumu@gmail.com"
-          className="inline-flex items-center gap-2 px-6 py-2.5 border border-primary text-primary rounded-md hover:bg-primary hover:text-primary-foreground transition-colors font-mono text-sm"
-        >
-          <Mail size={16} /> Say Hello
-        </a>
+        <div className="contact-actions">
+          <a href="mailto:mohithkudumu@gmail.com" className="contact-btn-primary">
+            <Mail size={18} /> Say Hello
+          </a>
+          <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="contact-btn-secondary">
+            <Linkedin size={18} /> LinkedIn
+          </a>
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-6 text-center">
-        <p className="text-xs text-muted-foreground font-mono">
-          Built with React & Tailwind · K. Sai Mohith © 2025
-        </p>
+      {/* ─── Footer ─── */}
+      <footer className="portfolio-footer">
+        <span>Built with React & Tailwind</span>
+        <span className="footer-dot">·</span>
+        <span>K. Sai Mohith © 2025</span>
       </footer>
     </div>
   );
