@@ -41,6 +41,18 @@ const SKILL_CATEGORIES = [
 
 const PROJECTS = [
   {
+    title: "RainDropClean",
+    tag: "CV & AI",
+    tagColor: "from-blue-500 to-cyan-500",
+    desc: "Custom hybrid CNN–Transformer image restoration model for removing raindrop artifacts from degraded day/night images. Achieved competitive NTIRE 2026 performance.",
+    tech: ["PyTorch", "Transformers", "Gradio", "Hugging Face"],
+    link: "https://huggingface.co/spaces/Mohithkudumu/RainDropclean",
+    github: "https://github.com/Mohithkudumu/Raindropremoval",
+    featured: true,
+    emoji: "🌧️",
+    stat: "PSNR: 32.85",
+  },
+  {
     title: "Campus Carbon Pulse",
     tag: "AI & IoT",
     tagColor: "from-emerald-500 to-teal-500",
@@ -642,11 +654,18 @@ const Index = () => {
                     <span key={t} className="project-chip">{t}</span>
                   ))}
                 </div>
-                {project.link && (
-                  <a href={project.link} target="_blank" rel="noreferrer" className="project-link-btn">
-                    Live Demo <ArrowUpRight size={14} />
-                  </a>
-                )}
+                <div className="flex items-center gap-3 mt-4">
+                  {project.link && (
+                    <a href={project.link} target="_blank" rel="noreferrer" className="project-link-btn">
+                      Live Demo <ArrowUpRight size={14} />
+                    </a>
+                  )}
+                  {(project as any).github && (
+                    <a href={(project as any).github} target="_blank" rel="noreferrer" className="project-link-btn">
+                      GitHub <Github size={14} />
+                    </a>
+                  )}
+                </div>
               </div>
               <div className={`project-glow bg-gradient-to-br ${project.tagColor}`} />
             </TiltCard>
