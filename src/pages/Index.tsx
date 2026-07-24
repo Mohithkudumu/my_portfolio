@@ -609,6 +609,25 @@ const Index = () => {
           <div className="exp-card">
             <div className="exp-meta">
               <div>
+                <h3 className="exp-role">Data Science Intern</h3>
+                <p className="exp-company">FinVij Solutions</p>
+              </div>
+              <span className="exp-date">May 2026 – July 2026</span>
+            </div>
+            <ul className="exp-bullets">
+              <li>Developed a VLM-based extraction system to parse and digitize complex financial documents using Vision LLMs and OCR</li>
+              <li>Built post-processing pipelines in FastAPI to validate, clean, and structure extracted data for downstream consumption</li>
+              <li>Achieved high extraction accuracy while ensuring DPDP compliance across all document processing workflows</li>
+            </ul>
+            <div className="exp-chips">
+              {["Python", "FastAPI", "Vision LLMs", "OCR"].map((t) => (
+                <span key={t} className="exp-chip">{t}</span>
+              ))}
+            </div>
+          </div>
+          <div className="exp-card">
+            <div className="exp-meta">
+              <div>
                 <h3 className="exp-role">
                   <a href="https://drive.google.com/file/d/1vTDeGYlptvbwz5XLQMUb6sxXmRcz5nRf/view?usp=sharing"
                     target="_blank" rel="noreferrer" className="exp-link">
