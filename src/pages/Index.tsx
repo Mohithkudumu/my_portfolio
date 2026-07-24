@@ -606,11 +606,16 @@ const Index = () => {
         <div className="exp-timeline">
           <div className="exp-line" />
           <div className="exp-dot" />
-          <div className="exp-card">
+          <div className="exp-card mb-8">
             <div className="exp-meta">
               <div>
-                <h3 className="exp-role">Data Science Intern</h3>
-                <p className="exp-company">FinVij Solutions</p>
+                <h3 className="exp-role">
+                  <a href="/Sai Mohith.pdf"
+                    target="_blank" rel="noreferrer" className="exp-link">
+                    Data Science Intern <ExternalLink size={14} />
+                  </a>
+                </h3>
+                <p className="exp-company"><a href="https://finvij.com/" target="_blank" rel="noreferrer" className="exp-link">FinVij Solutions</a></p>
               </div>
               <span className="exp-date">May 2026 – July 2026</span>
             </div>
